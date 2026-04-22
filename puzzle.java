@@ -1,47 +1,23 @@
 // 14 by 14 array
 //(Apologies, but we’ve drawn a blank with this puzzle’s instructions. One thing we do know is that the answer is a positive integer…)
 class puzzle {
+
+    private char[][] orig;
+    private int[][] intg;
+    private int[][] totals;
+
     public static void main(String[] args) {
         puzzle p = new puzzle();
-        p.printgrid(null);
+        p.printgrid("char");
+        p.printgrid("int");
     }
-    
+
     puzzle(){
-        int[][] totals = gridtotals();
-        int total = 0;
-        for(int i : totals[0]) total += i;
-        System.out.println(total);
+        orig = original();   // initialize once
+        intg = intgrid();    // build from orig once
+        totals = gridtotals();
     }
-    // helpers
-    public void printgrid(String a){
-        if (a.equals("char")) {
-            char[][] orig = original();
-            for (int r = 0; r < 14; r++) {
-                for (int c = 0; c < 14; c++) {
-                    System.out.print(orig[r][c] + "|");
-                }
-                System.out.println("");
-            }
-        } else if (a.equals("int")){
-            int[][] intg = intgrid();
-            for (int r = 0; r < 14; r++) {
-                for (int c = 0; c < 14; c++) {
-                    System.out.print(intg[r][c] + "|");
-                }
-                System.out.println("");
-            }
-        }
-
-    }
-    public int[] column(int x){
-        int[] c = new int[14];
-        for (int i = 0; i < 14; i++) {
-            c[i] = intgrid[i][x];
-        }
-    }
-
-
-
+// 1. GRIDS ---
     public char[][] original(){
         return new char [][]{
         {'r','s','d','i','f','i','n','d','t','h','s','a','r','t'},
@@ -60,31 +36,66 @@ class puzzle {
         {'t','u','n','e','n','t','y','-','t','e','s','s','i','x'}
         };
     }
+
     public int[][] intgrid(){
-        char[][] orig = original();
         int [][] x = new int[14][14];
         for (int r = 0; r < 14; r++) {
             for (int c = 0; c < 14; c++) {
-                x[r][c] = (int) orig[r][c] - 96;
+                x[r][c] = orig[r][c] - 96;
             }
         }
         return x;
     }
-    public int total(int[] r){
+// ---
+
+// 2. HELPERS ---
+    public void printgrid(String a){
+        if ("char".equals(a)) {
+            for (int r = 0; r < 14; r++) {
+                for (int c = 0; c < 14; c++) {
+                    System.out.print(orig[r][c] + "|");
+                }
+                System.out.println();
+            }
+        } else if ("int".equals(a)){
+            for (int r = 0; r < 14; r++) {
+                for (int c = 0; c < 14; c++) {
+                    System.out.print(intg[r][c] + "|");
+                }
+                System.out.println();
+            }
+        }
+    }
+
+    public int[] column(int x){
+        int[] c = new int[14];
+        for (int i = 0; i < 14; i++) {
+            c[i] = intg[i][x];
+        }
+        return c;
+    }
+
+    public int linetotal(int[] r){
         int x = 0;
         for (int i : r) {
             x += i;
         }
         return x;
     }
+// 3. CALCULATORS 
     public int[][] gridtotals(){
         int[][] x = new int[2][14];
-        int[][] intg = intgrid();
         for (int i = 0; i < 14; i++) {
-            //row counts on top row
-            x[0][i] = total(intg[i]);
-            //column counts on bottom row
-            x[1][i] = total(column(i));
+            x[0][i] = linetotal(intg[i]);   // row totals
+            x[1][i] = linetotal(column(i)); // column totals
+        }
+        return x;
+    }
+    public int[][] modulo(){
+        int[][] x = new int[2][14];
+        for (int i = 0; i < 14; i++) {
+            x[0][i] = totals[0][i]%24;
+            x[1][i] = totals[0][i]%24;
         }
         return x;
     }
